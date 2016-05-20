@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html ng-app="sportsStore">
+<head>
+	<title>SportsStore</title>
+	<link href="../styles/bootstrap.css" rel="stylesheet" />
+	<link href="../styles/bootstrap-theme.css" rel="stylesheet" />
+	<script type="text/javascript" src="../scripts/angular.js"></script>
+	<script>
+		var sportsStore = angular.module("sportsStore", ['customFilters']);
+
+		sportsStore
+
+		.controller("sportsStoreCtrl", function ($scope) {
+			$scope.data = {
+				//error: { status: 404 },
+				products: [
+					{"category":"Watersports","description":"A boat for one person","name":"Kayak", "price":275,"id":"05af70919155f8fc"},
+					{"category":"Watersports", "description":"Protective and fashionable", "name":"Lifejacket","price":48.95,"id":"3d31d81b218c98ef"},
+					{"category":"Soccer","description":"FIFA-approved size and weight", "name":"Soccer Ball","price":19.5,"id":"437615faf1d38815"},
+					{"category":"Soccer","description":"Give your playing field a professional touch", "name":"Corner Flags","price":34.95,"id":"93c9cc08ac2f28d4"},
+					{"category":"Soccer","description":"Flat-packed 35,000-seat stadium", "name":"Stadium","price":79500,"id":"ad4e64b38baa088f"},
+					{"category":"Chess","description":"Improve your brain efficiency by 75%", "name":"Thinking Cap","price":16,"id":"b9e8e55c1ecc0b63"},
+					{"category":"Chess","description":"Secretly give your opponent a disadvantage", "name":"Unsteady Chair","price":29.95,"id":"32c2355f9a617bbd"},
+					{"category":"Chess","description":"A fun game for the family", "name":"Human Chess Board","price":75,"id":"5241512218f73a26"},
+					{"category":"Chess","description":"Gold-plated, diamond-studded King", "name":"Bling-Bling King","price":1200,"id":"59166228d70f8858"}
+				]	
+			};
+		})
+
+		.constant('productListActiveClass', 'btn-primary')
+		.constant('productListPageCount', 3)
+		.controller('productListCtrl', function ($scope, $filter, productListActiveClass, productListPageCount) {
+			var selectedCategory = null;
+
+			$scope.selectedPage = 1;
+			$scope.pageSize = productListPageCount;
+
+			$scope.selectCategory = function (newCategory) {
+				selectedCategory = newCategory;
+				$scope.selectedPage = 1;
+			};
+
+			$scope.selectPage = function (newPage) {
+				$scope.selectedPage = newPage;
+			};
+
+			$scope.categoryFilterFn = function (product) {
+				return selectedCategory == null || product.category == selectedCategory;
+			};
+
+			$scope.getHomeClass = function () {
+				return selectedCategory == null ? productListActiveClass : '';
+			};
+
+			$scope.getCategoryClass = function (category) {
+				return selectedCategory == category ? productListActiveClass : '';
+			};
+
+			$scope.getPageClass = function (page) {
+				return $scope.selectedPage == page ? productListActiveClass : '';
+			};
+		});
+
+
+		angular.module('customFilters', [])
+			.filter('unique', function () {
+				return function (data, propertyName) {
+					if (angular.isArray(data) && angular.isString(propertyName)) {
+						var results = [],
+							keys = {};
+						data.forEach(function (item) {
+							var val = item[propertyName];
+							if (angular.isUndefined(keys[val])) {
+								keys[val] = true;
+								results.push(val);
+							}
+						})
+						return results;
+					} else {
+						return data;
+					}
+				};
+			})
+			.filter('range', function ($filter) {
+				return function (data, page, size) {
+					if (angular.isArray(data) && angular.isNumber(page) && angular.isNumber(size)) {
+						var startIndex = (page - 1) * size;
+						if (data.length < startIndex) {
+							return [];
+						} else {
+							//return $filter('limitTo')(data.splice(startIndex), size);
+							return data.splice(startIndex, size);
+						}
+					} else {
+						return data;
+					}
+				}
+			})
+			.filter('pageCount', function () {
+				return function (data, size) {
+					if (angular.isArray(data)) {
+						var results = [];
+						for (let i = 0; i < Math.ceil(data.length / size); i++) {
+							results.push(i);
+						}
+						return results;
+					} else {
+						return data;
+					}
+				}
+			});
+	</script>
+</head>
+<body ng-controller="sportsStoreCtrl">
+
+	<div class="navbar navbar-inverse">
+		<a class="navbar-brand" href="#">SPORTS STORE</a>
+	</div>
+
+	<div class="alert alert-danger" ng-show="data.error">
+		Error ({{data.error.status}}). The product data was not loaded.
+		<a href="/sports-store/app.html" class="alert-link">Click here to try again</a>
+	</div>
+
+	<ng-include src="'views/productList.html'"></ng-include>
+
+</body>
+</html>
