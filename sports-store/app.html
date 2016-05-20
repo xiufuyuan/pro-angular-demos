@@ -5,12 +5,36 @@
 	<link href="../styles/bootstrap.css" rel="stylesheet" />
 	<link href="../styles/bootstrap-theme.css" rel="stylesheet" />
 	<script type="text/javascript" src="../scripts/angular.js"></script>
+	<script type="text/javascript" src="../scripts/angular-route.js"></script>
 	<script>
-		var sportsStore = angular.module("sportsStore", ['customFilters']);
+		var sportsStore = angular.module("sportsStore", ['customFilters', 'cart', 'ngRoute'])
+		.config(function ($routeProvider) {
+
+			$routeProvider.when('/checkout', {
+				templateUrl: '/sports-store/views/checkoutSummary.html'
+			});
+
+			$routeProvider.when('/products', {
+				templateUrl: '/sports-store/views/productList.html'
+			});
+
+			$routeProvider.when("/complete", {
+				templateUrl: "/sports-store/views/thankYou.html"
+			});
+
+			$routeProvider.when("/placeorder", {
+				templateUrl: "/sports-store/views/placeOrder.html"
+			});
+
+			$routeProvider.otherwise({
+				templateUrl: '/sports-store/views/productList.html'
+			});
+
+		});
 
 		sportsStore
 
-		.controller("sportsStoreCtrl", function ($scope) {
+		.controller("sportsStoreCtrl", function ($scope, $location, cart) {
 			$scope.data = {
 				//error: { status: 404 },
 				products: [
@@ -25,11 +49,22 @@
 					{"category":"Chess","description":"Gold-plated, diamond-studded King", "name":"Bling-Bling King","price":1200,"id":"59166228d70f8858"}
 				]	
 			};
+
+			$scope.sendOrder = function (shippingDetails) {
+				var order = angular.copy(shippingDetails);
+				order.products = cart.getProducts();
+				console.dir(order);
+
+				$scope.data.orderId = Date.now();
+				cart.getProducts().length = 0;
+				
+				$location.path('/complete');
+			}
 		})
 
 		.constant('productListActiveClass', 'btn-primary')
 		.constant('productListPageCount', 3)
-		.controller('productListCtrl', function ($scope, $filter, productListActiveClass, productListPageCount) {
+		.controller('productListCtrl', function ($scope, $filter, productListActiveClass, productListPageCount, cart) {
 			var selectedCategory = null;
 
 			$scope.selectedPage = 1;
@@ -59,6 +94,10 @@
 			$scope.getPageClass = function (page) {
 				return $scope.selectedPage == page ? productListActiveClass : '';
 			};
+
+			$scope.addProductToCart = function (product) {
+				cart.addProduct(product.id, product.name, product.price);
+			};	
 		});
 
 
@@ -110,11 +149,14 @@
 				}
 			});
 	</script>
+	<script type="text/javascript" src="controllers/checkoutController.js"></script>
+	<script type="text/javascript" src="components/cart/cart.js"></script>
 </head>
 <body ng-controller="sportsStoreCtrl">
 
 	<div class="navbar navbar-inverse">
 		<a class="navbar-brand" href="#">SPORTS STORE</a>
+		<cart-summary />
 	</div>
 
 	<div class="alert alert-danger" ng-show="data.error">
@@ -122,7 +164,8 @@
 		<a href="/sports-store/app.html" class="alert-link">Click here to try again</a>
 	</div>
 
-	<ng-include src="'views/productList.html'"></ng-include>
+	<!-- <ng-include src="'views/productList.html'"></ng-include> -->
+	<ng-view />
 
 </body>
 </html>

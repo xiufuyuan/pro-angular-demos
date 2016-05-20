@@ -13,8 +13,10 @@
 				<span class="pull-right label label-primary">
 					{{item.price | currency}}
 				</span>
-				<p class="lead">{{item.description}}</p>
 			</h3>
+			<button class="btn btn-success pull-right" ng-click="addProductToCart(item)">Add to cart</button>
+			<p class="lead">{{item.description}}</p>		
+
 		</div>
 		<div class="pull-right btn-group">
 			<a class="btn btn-default" ng-click="selectPage($index + 1)" ng-class="getPageClass($index + 1)"
