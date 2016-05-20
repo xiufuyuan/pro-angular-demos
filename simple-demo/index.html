@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+<head>
+	<meta charset="UTF-8">
+	<title>AngularJS Demo</title>
+	<link href="../styles/bootstrap.css" rel="stylesheet" />
+	<link href="../styles/bootstrap-theme.css" rel="stylesheet" />
+	<script type="text/javascript" src="../scripts/angular.js"></script>
+	<script type="text/javascript">
+
+		var now = new Date();
+		
+		var myApp = angular.module('exampleApp', ['exampleApp.Controllers', 'exampleApp.Services', 'exampleApp.Directives', 'exampleApp.Filters'])
+		.constant("startTime", new Date().toLocaleTimeString())
+		.config(function (startTime) {
+			console.log('Main module Config: ', startTime);
+		})
+		.run(function (startTime) {
+			console.log('Main module Run: ', startTime);
+		})
+		.value('nowValue', now);
+
+
+		angular.module("exampleApp.Controllers", [])
+		.controller('dayCtrl', function ($scope, days) {
+			$scope.day = days.today;
+		})
+		.controller("tomorrowCtrl", function ($scope, days) {
+			$scope.day = days.tomorrow;
+		});
+
+		angular.module("exampleApp.Services", [])
+		.service('days', function (nowValue) {
+			this.today = nowValue.getDay();
+			this.tomorrow = (this.today + 1) % 7;
+		}).config(function() {
+			console.log("Services module config: (no time)");
+		})
+		.run(function (startTime) {
+			console.log("Services module run: " + startTime);
+		});
+
+		angular.module("exampleApp.Directives", [])
+		.directive('highlight', function ($filter) {
+			var dayFilter = $filter('dayName');
+			return function (scope, element, attrs) {
+				if (dayFilter(scope.day) == attrs['highlight']) {
+					element.css('color', 'red');
+				}
+			}
+		});
+
+		angular.module("exampleApp.Filters", [])
+		.filter('dayName', function () {
+			var dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+			return function (input) {
+				return angular.isNumber(input) ? dayNames[input] : input;
+			}
+		});
+
+	</script>
+</head>
+<body ng-controller="dayCtrl">
+	<div class="panel">
+		<div class="page-header">
+			<h3>AngularJS App</h3>
+		</div>
+		<h4 ng-controller="dayCtrl" highlight="Friday">Today is {{day || "(unknown)" | dayName}}</h4>
+		<h4 ng-controller="tomorrowCtrl" highlight="Friday">Tomorrow is {{day || "(unknown)" | dayName}}</h4>
+	</div>
+</body>
+</html>
