@@ -1,0 +1,35 @@
+<table class="table">
+  <!-- <thead>
+      <tr>
+          <th>#</th>
+          <th>Action</th>
+          <th>Done</th>
+      </tr>
+  </thead> -->
+  <tbody>
+  <!-- <tr ng-repeat="item in todos" ng-class="$odd ? 'odd' : 'even'">
+      <td>{{$index + 1}}: {{$first}}: {{$middle}}: {{$last}}: {{$even}}: {{$odd}}</td>
+      <td>{{item.action}}</td>
+      <td>{{item.complete}}</td>
+      <td ng-repeat="prop in item">{{prop}}</td>
+      <td ng-repeat="(key, prop) in item">{{key}}: {{prop}}</td>
+      <td>{{item.action}}</td>
+      <td><span ng-if="$first || $last">{{item.complete}}</span></td>
+  </tr> -->
+
+  <tr ng-repeat="item in todos" ng-class="$odd ? 'odd' : 'even'">
+    <td ng-repeat="prop in item">{{prop}}</td>
+  </tr>
+
+  <!--<tr ng-repeat-start="item in todos">
+      <td>This is item {{$index}}</td>
+  </tr>
+  <tr>
+      <td>The action is {{item.action}}</td>
+  </tr>
+  <tr ng-repeat-end>
+      <td>Item {{$index}} is {{$item.complete ? '' : 'not '}} complete</td>
+  </tr>-->
+
+  </tbody>
+</table>
