@@ -9,32 +9,48 @@
     angular.module("exampleApp", [])
 
         .directive('unorderedList', function () {
-          return function (scope, element, attrs) { //console.log(attrs);
-            var data = scope[attrs.unorderedList];
-            var listProperty = attrs.listProperty;
+          /*return {
+            restrict: 'EACM',
+            link: function (scope, element, attrs) {
+              var data = scope[attrs['unorderedList'] || attrs['listSource']];
+              var listProperty = attrs['listProperty'] || 'price | currency';
 
-            if (Array.isArray(data)) {
-              var listElem = angular.element('<ul>');
-              element.append(listElem);
+              if (Array.isArray(data)) {
+                var listElem = angular.element('<ul>');
 
-              for (var i =0; i < data.length; i++) {
-                /*console.log('Item: ', data[i].name);
-                listElem.append(angular.element('<li>').text(scope.$eval(listProperty, data[i])));*/
+                if (element[0].nodeName == '#comment') {
+                  element.parent().append(listElem);
+                } else {
+                  element.append(listElem);
+                }
 
-                (function (item) {
-                  var itemElem = angular.element('<li>');
-                  listElem.append(itemElem);
-
-                  scope.$watch(function (innerScope) {
-                    return innerScope.$eval(listProperty, item);
-                  }, function (newVal, oldVal) {
-                    itemElem.text(newVal);
-                  });
-                }(data[i]));
-
+                for (var i =0; i < data.length; i++) {
+                  listElem.append(angular.element('<li>').text(scope.$eval(listProperty, data[i])));
+                }
               }
             }
-          };
+          };*/
+
+          /*return {
+            link: function (scope, element, attrs) {
+              scope.data = scope[attrs['unorderedList']];
+            },
+            restrict: 'A',
+            template: function () {
+              return angular.element(document.querySelector('#listTemplate')).html();
+            }
+          }*/
+
+          return {
+            link: function (scope, element, attrs) {
+              scope.data = scope[attrs['unorderedList']];
+            },
+            restrict: 'A',
+            replace: true,
+            templateUrl: function (elem, attrs) {
+              return attrs['template'] !== 'table' ? 'itemTemplate.html' : 'tableTemplate.html';
+            }
+          }
         })
 
         .controller("defaultCtrl", function ($scope) {
@@ -47,13 +63,18 @@
             {name: "Pears", category: "Fruit", price: 2.02, expiry: 6}
           ];
 
-          $scope.incrementPrice = function () {
+          /*$scope.incrementPrice = function () {
             for (var i = 0; i < $scope.products.length; i++) {
               $scope.products[i].price++;
             }
-          };
+          };*/
 
         });
+  </script>
+  <script type="text/template" id="listTemplate">
+    <ul>
+      <li ng-repeat="item in data">{{item.price | currency}}</li>
+    </ul>
   </script>
 </head>
 <body ng-controller="defaultCtrl">
@@ -62,16 +83,37 @@
   <div class="panel-heading">
     <h3>Products</h3>
   </div>
-  <div class="panel-body">
+  <!--<div class="panel-body">
     <button class="btn btn-primary" ng-click="incrementPrice()">
       Change Prices
     </button>
-  </div>
+  </div>-->
+  <!--<div class="panel-body">
+    <h4>Applying the Directive as an Element</h4>
+    <unordered-list list-source="products" list-property="price | currency"></unordered-list>
+  </div>-->
+
   <div class="panel-body">
-    <div unordered-list="products" list-property="name"></div>
-    <div unordered-list="products" list-property="category"></div>
-    <div unordered-list="products" list-property="price | currency"></div>
+    <div unordered-list="products">
+      This is where the list will go
+    </div>
   </div>
+
+  <div class="panel-body">
+    <div unordered-list="products" template="table" class="table table-striped" ng-repeat="count in [1, 2, 3]">
+      This is where the table will go
+    </div>
+  </div>
+
+  <!--<div class="panel-body">
+    <h4>Applying the Directive as a Class Attribute Value</h4>
+    <div class="unordered-list: products" list-property="price | currency"></div>
+  </div>-->
+
+  <!--<div class="panel-body">
+    <h4>Applying the Directive as a Comment</h4>
+    &lt;!&ndash; directive: unordered-list products &ndash;&gt;
+  </div>-->
 </div>
 
 </body>
