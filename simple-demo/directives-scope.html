@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+<head>
+  <title>Directives</title>
+  <link href="../styles/bootstrap.css" rel="stylesheet"/>
+  <link href="../styles/bootstrap-theme.css" rel="stylesheet"/>
+  <script type="text/ng-template" id="scopeTemplate">
+    <div class="panel-body">
+      <p>Local Value: {{local}}, City: {{cityFn({nameVal: 'xiufu'})}}</p>
+      <p>Local: <input ng-model="local" /></p>
+
+      <p>One-Way Value: {{oneWay}}</p>
+      <p>One-Way: <input ng-model="oneWay" /></p>
+
+      <p>Two-Way Value: {{twoWay}}</p>
+      <p>Two-Way: <input ng-model="twoWay" /></p>
+      <!--<p>Name: <input ng-model="data.name" /></p>
+      <p>Country: <input ng-model="country" /></p>-->
+    </div>
+  </script>
+  <script type="text/javascript" src="../scripts/angular.js"></script>
+  <script>
+    angular.module("exampleApp", [])
+        .directive("scopeDemo", function () {
+          return {
+
+            /*scope: true,*/ // 创建一个继承 parent scope 的独立 child scope
+
+            // 这将创建一个隔离的scope
+            scope: {
+              local: '@local',
+              oneWay: '<oneWay',
+              twoWay: '=twoWay',
+              cityFn: '&city'
+            },
+
+            /*template: "Name: <input ng-model='name' /> {{name}}"*/
+            template: function () {
+              return angular.element(document.querySelector('#scopeTemplate')).html();
+            }
+          }
+        })
+        .controller("scopeCtrl", function ($scope) {
+          $scope.data = { name: 'Adam' };
+          $scope.city = 'London';
+          $scope.one = 'One-Way';
+          $scope.two = 'Two-Way';
+
+          $scope.getCity = function (name) {
+            return name === 'xiufu' ? 'ChangSha' : $scope.city;
+          };
+        })
+        .controller('secondCtrl', function ($scope) {
+          $scope.name = 'xiufu';
+        });
+  </script>
+</head>
+<body ng-controller="scopeCtrl">
+
+<div class="panel panel-default">
+  <!--<div scope-demo></div>
+  <div scope-demo></div>-->
+  <div class="panel-body">
+    Direct Binding: <input ng-model="city" />
+    One-Way Binding: <input ng-model="one">
+    Two-Way Binding: <input ng-model="two">
+  </div>
+  <scope-demo
+      local="Hello, {{city}}"
+      one-way="one"
+      two-way="two"
+      city="getCity(nameVal)">
+
+  </scope-demo>
+</div>
+
+</body>
+</html>
