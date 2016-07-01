@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+<head>
+  <title>Directives</title>
+  <link href="../styles/bootstrap.css" rel="stylesheet"/>
+  <link href="../styles/bootstrap-theme.css" rel="stylesheet"/>
+  <script type="text/ng-template" id="template">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4>This is the panel</h4>
+      </div>
+      <div class="panel-body" ng-transclude>
+      </div>
+    </div>
+  </script>
+  <script type="text/javascript" src="../scripts/angular.js"></script>
+  <script>
+    angular.module("exampleApp", [])
+
+        .directive('panel', function () {
+          return {
+            restrict: 'E',
+            scope: false,  // Ensure the directive operates on the controller scope when value is false
+            transclude: true,
+            template: function () {
+              return angular.element(document.querySelector('#template')).html();
+            },
+            link: function (scope, element, attrs) {
+              scope.dataSource = 'directive';
+            }
+          };
+        })
+
+        .controller("defaultCtrl", function ($scope) {
+          $scope.dataSource = 'controller';
+        });
+  </script>
+</head>
+<body ng-controller="defaultCtrl">
+
+<panel>
+  The data value comes from the: {{dataSource}}
+</panel>
+
+</body>
+</html>
