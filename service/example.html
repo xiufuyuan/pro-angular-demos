@@ -12,20 +12,42 @@
   <script>
     angular
         .module("exampleApp", ['exampleControllers', 'exampleServices', 'exampleDirectives'])
-        .config(function (/*debugService*/) {
+        .config(function (/*debugService*/$anchorScrollProvider) {
           //debugService.debugEnabled(true).messageCounterEnabled(false);
+          $anchorScrollProvider.disableAutoScrolling();
         });
   </script>
 </head>
 <body>
 <div ng-controller="defaultCtrl">
   <div class="well">
+    <p><input class="form-control" ng-model="expr" /></p>
+    <p>
+      Result: <span eval-expression="expr"></span>
+    </p>
+
     <div class="btn-group" tri-button counter="data.totalClicks" source="data.cities">
-      <button class="btn btn-default" ng-repeat="city in data.cities">
+      <button class="btn btn-default" ng-repeat="city in data.cities" ng-click="alert(city)">
         {{city}}
       </button>
     </div>
     <h5>Total Clicks: {{data.totalClicks}}</h5>
+  </div>
+
+  <div class="panel panel-default">
+    <h4 class="panel-heading">URL</h4>
+    <div class="panel-body">
+      <p id="top">This is the top</p>
+      <button class="btn btn-primary" ng-click="show('bottom')">
+        Go to Bottom</button>
+      <p>
+      <ul>
+        <li ng-repeat="item in items">{{item}}</li>
+      </ul>
+      </p>
+      <p id="bottom">This is the bottom</p>
+      <button class="btn btn-primary" ng-click="show('top')">Go to Top</button>
+    </div>
   </div>
 </div>
 

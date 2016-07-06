@@ -15,4 +15,21 @@ angular.module('exampleDirectives', []).directive('triButton', function () {
       });
     }
   }
-});
+})
+  .directive('evalExpression', function ($parse) {
+    return function (scope, element, attrs) {
+      scope.$watch(attrs['evalExpression'], function (newValue) {
+        var result = undefined;
+        try {
+          var fn = $parse(scope.expr);
+          result = fn(scope);
+          if (result == undefined) {
+            result = 'No result';
+          }
+        } catch (err) {
+          result = 'Cannot evaluate expression';
+        }
+        element.text(result);
+      })
+    }
+  });
