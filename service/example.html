@@ -15,6 +15,9 @@
         .config(function (/*debugService*/$anchorScrollProvider) {
           //debugService.debugEnabled(true).messageCounterEnabled(false);
           $anchorScrollProvider.disableAutoScrolling();
+
+          //$interpolateProvider.startSymbol("!!");
+          //$interpolateProvider.endSymbol("!!");
         });
   </script>
 </head>
@@ -26,12 +29,19 @@
       Result: <span eval-expression="expr"></span>
     </p>
 
+    <p><input class="form-control" ng-model="price" /></p>
+    <p>
+      <span interpolate amount="price" tax="10"></span>
+    </p>
+
     <div class="btn-group" tri-button counter="data.totalClicks" source="data.cities">
       <button class="btn btn-default" ng-repeat="city in data.cities" ng-click="alert(city)">
         {{city}}
       </button>
     </div>
     <h5>Total Clicks: {{data.totalClicks}}</h5>
+
+    <p compile-directive></p>
   </div>
 
   <div class="panel panel-default">
